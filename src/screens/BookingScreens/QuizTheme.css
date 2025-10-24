@@ -1,0 +1,86 @@
+/* Import elegant fonts from Google Fonts for a premium feel */
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Lora:wght@400;500&display=swap');
+
+html, body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+/* --- Main Page Style --- */
+.quiz-page-container {
+  font-family: 'Lora', serif;
+  /* Using the provided image as a full-screen background */
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../../assets/donFenticas.jpg');
+  background-size: contain;
+  background-position: center;
+  background-attachment: fixed; /* Keeps the background static on scroll */
+  min-height: 100vh;
+  padding: 2rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* --- The Booking Card --- */
+.quiz-form-card {
+  background-color: rgba(255, 255, 255, 0.92); /* Slightly transparent white */
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  border-radius: 1rem;
+  box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+  backdrop-filter: blur(8px); /* Frosted glass effect */
+  max-width: 500px;
+  width: 100%;
+}
+
+.quiz-form-card .card-title {
+  font-family: 'Playfair Display', serif;
+  color: #2c3e50; /* A dark, sophisticated slate color */
+  font-weight: 700;
+  font-size: 2.5rem;
+}
+
+/* --- Form Elements --- */
+.form-label {
+    color: #34495e; /* A slightly softer slate for labels */
+    font-weight: 500;
+}
+
+.form-control,
+.form-select {
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  padding: 0.75rem 1rem;
+  transition: border-color 0.2s, box-shadow 0.2s;
+}
+
+.form-control:focus,
+.form-select:focus {
+  border-color: #c09f58; /* A soft, warm gold for focus */
+  box-shadow: 0 0 0 0.25rem rgba(192, 159, 88, 0.25); /* Gold focus glow */
+}
+
+/* --- Custom Themed Button --- */
+.btn-quiz-theme {
+  background: linear-gradient(145deg, #34495e, #2c3e50); /* Gradient slate button */
+  border: none;
+  color: white;
+  font-weight: 500;
+  padding: 0.8rem 1.5rem;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.btn-quiz-theme:hover {
+  color: white;
+  transform: translateY(-3px);
+  box-shadow: 0 7px 20px rgba(0, 0, 0, 0.3);
+}
+
+.btn-quiz-theme:disabled {
+    background: #e9ecef;
+    color: #6c757d;
+    transform: none;
+    box-shadow: none;
+}
