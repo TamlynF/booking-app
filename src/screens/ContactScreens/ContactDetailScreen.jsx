@@ -1,12 +1,15 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
-import { GOOGLE_SCRIPT_URL } from '../../util/globalVariables';
+import { useParams, useNavigate, useLocation } from 'react-router-dom';
 import { Card, ListGroup, Spinner, Alert, Button } from 'react-bootstrap';
+import axios from 'axios';
+
+import { GOOGLE_SCRIPT_URL } from '../../util/globalVariables';
 
 function ContactDetailScreen() {
     const { contactEmail } = useParams();
     const navigate = useNavigate();
+    const location = useLocation();
+    const fromDate = location.state?.fromDate;
     const [bookings, setBookings] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -28,24 +31,23 @@ function ContactDetailScreen() {
             });
     }, []);
 
-    // Use useMemo to process the data once bookings are loaded
     const contactData = useMemo(() => {
         if (bookings.length === 0) return null;
-
+        console.log('contactEmail: ' + contactEmail);
         const decodedEmail = decodeURIComponent(contactEmail);
+        console.log('decodedEmail: ' + decodedEmail);
+        
         const contactBookings = bookings.filter(
             b => (b.contactEmail || '').toLowerCase() === decodedEmail.toLowerCase()
-        ).sort((a,b) => new Date(b.bookingDate) - new Date(a.bookingDate)); // Sort by date, newest first
+        ).sort((a, b) => new Date(b.bookingDate) - new Date(a.bookingDate)); // Sort by date, newest first
 
         if (contactBookings.length === 0) return { notFound: true };
 
-        // Get consistent contact details from their most recent booking
         const latestBooking = contactBookings[0];
         const contactName = latestBooking.contactName;
         const phone = `${latestBooking.contactCountryCode || ''} ${latestBooking.contactPhoneNo || ''}`.trim();
 
-        // Calculate stats
-        const totalAttended = contactBookings.filter(b => b.status === 'Confirmed').length;        
+        const totalAttended = contactBookings.filter(b => b.status === 'Confirmed').length;
         const totalWins = contactBookings.filter(b => b.status === 'Confirmed' && b.isWinner === true).length;
         return {
             contactName,
@@ -72,13 +74,21 @@ function ContactDetailScreen() {
     }
 
     if (!contactData) {
-        return null; // Still processing
+        return null;
     }
+
+    const handleBackClick = () => {
+        if (fromDate) {
+            navigate('/admin', { state: { selectedDate: fromDate } });
+        } else {
+            navigate('/admin'); // or navigate(-1)
+        }
+    };
 
     return (
         <div className="container my-4">
-            <Button variant="outline-secondary" size="sm" onClick={() => navigate(-1)} className="mb-3">
-                &larr; Back to Dashboard
+            <Button variant="outline-secondary" size="sm" onClick={handleBackClick} className="mb-3">
+                &larr; Back to Quiz
             </Button>
 
             <div className="row">
@@ -89,7 +99,7 @@ function ContactDetailScreen() {
                             <Card.Title>{contactData.contactName}</Card.Title>
                             <ListGroup variant="flush">
                                 <ListGroup.Item><strong>Email:</strong> {contactData.decodedEmail}</ListGroup.Item>
-                                <ListGroup.Item><strong>Phone:</strong> {contactData.phone || 'N/A'}</ListGroup.Item>
+                                <ListGroup.Item><strong>Phone:</strong> {contactData.phone || 'None'}</ListGroup.Item>
                             </ListGroup>
                         </Card.Body>
                     </Card>
@@ -97,7 +107,7 @@ function ContactDetailScreen() {
                     <Card>
                         <Card.Header as="h5">Quiz Stats</Card.Header>
                         <Card.Body>
-                             <ListGroup variant="flush">
+                            <ListGroup variant="flush">
                                 <ListGroup.Item className="d-flex justify-content-between align-items-center">
                                     Times Attended:
                                     <span className="badge bg-primary rounded-pill fs-6">{contactData.totalAttended}</span>
@@ -119,7 +129,7 @@ function ContactDetailScreen() {
                     <Card>
                         <Card.Header as="h5">Booking History</Card.Header>
                         <Card.Body>
-                            <div className="table-responsive" style={{maxHeight: '600px', overflowY: 'auto'}}>
+                            <div className="table-responsive" style={{ maxHeight: '600px', overflowY: 'auto' }}>
                                 <table className="table table-striped table-hover">
                                     <thead className="table-light">
                                         <tr>
@@ -127,6 +137,7 @@ function ContactDetailScreen() {
                                             <th>Team Name</th>
                                             <th>Guests</th>
                                             <th>Status</th>
+                                            <th className="text-center">Winner 🏆</th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -139,6 +150,15 @@ function ContactDetailScreen() {
                                                     <span className={`badge ${booking.status === 'Confirmed' ? 'bg-success' : booking.status === 'Cancelled' ? 'bg-danger' : 'bg-warning text-dark'}`}>
                                                         {booking.status}
                                                     </span>
+                                                </td>
+                                                <td className="text-center">
+                                                    <Button
+                                                        variant={booking.isWinner ? "success" : "outline-secondary"}
+                                                        size="sm"
+                                                        disabled
+                                                        title={booking.isWinner ? "Quiz Winner!" : "Mark as Winner"}
+                                                    >🏆
+                                                    </Button>
                                                 </td>
                                             </tr>
                                         ))}
