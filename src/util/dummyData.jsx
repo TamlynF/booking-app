@@ -7,3 +7,12 @@ export const COUNTRY_CODES = [
     { code: '+33', name: 'France (+33)' },
     { code: '+34', name: 'Spain (+34)' },
 ];
+
+export const ROUND_OPTIONS = [
+    "1 - General Knowledge",
+    "2 - Movies",
+    "3 - Music",
+    "4 - Sport",
+    "5 - Picture",
+    "6 - Songs"
+];

@@ -52,6 +52,26 @@ const customCss = `
         padding-top: 0.6rem;
         padding-bottom: 0.6rem;
     }
+        .quiz-summary-card {
+        cursor: pointer;
+        transition: box-shadow 0.2s ease-in-out;
+        border-radius: var(--bs-list-group-border-radius, 0.375rem);
+    }
+    .quiz-summary-card:hover {
+        box-shadow: 0 .25rem .75rem rgba(0,0,0,.05);
+        background-color: #fcfcfc;
+    }
+    .next-event-highlight, .next-event-highlight:hover {
+        background-color: #fff9e6 !important; /* A very light yellow */
+        border: 1px solid #ffe69c !important; /* Bootstrap's warning border color */
+    }
+    .chevron-icon {
+        color: #6c757d; /* text-muted */
+        transition: transform 0.2s ease;
+    }
+    .quiz-summary-card:hover .chevron-icon {
+        transform: translateX(3px);
+    }7u
 `;
 
 function AdminDashboardScreen() {
@@ -337,76 +357,6 @@ function AdminDashboardScreen() {
             });
     };
 
-    // const handleSetWinner = (booking) => {
-    //     setLoadingWinner(booking.bookingId);
-
-    //     if (booking.isWinner) {
-    //         const payload = {
-    //             action: 'updateBooking',
-    //             bookingId: booking.bookingId,
-    //             updates: { isWinner: false } 
-    //         };
-
-    //         axios.post(GOOGLE_SCRIPT_URL, JSON.stringify(payload), {
-    //             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-    //         })
-    //         .then(response => {
-    //             if (response.data.result === 'success') {
-    //                 setBookings(prevBookings => 
-    //                     prevBookings.map(b => 
-    //                         b.bookingId === booking.bookingId ? { ...b, isWinner: false } : b
-    //                     )
-    //                 );
-    //             } else {
-    //                 setError("Could not unset winner. Please try again.");
-    //             }
-    //         })
-    //         .catch(err => {
-    //             console.error('Error unsetting winner:', err);
-    //             setError("An error occurred while unsetting the winner.");
-    //         })
-    //         .finally(() => {
-    //             setLoadingWinner(null); 
-    //         });
-
-    //     } else {
-    //         const payload = {
-    //             action: 'setWinner',
-    //             bookingId: booking.bookingId,
-    //             bookingDate: booking.bookingDate 
-    //         };
-
-    //         axios.post(GOOGLE_SCRIPT_URL, JSON.stringify(payload), {
-    //             headers: { 'Content-Type': 'text/plain;charset=utf-8' }
-    //         })
-    //         .then(response => {
-    //             if (response.data.result === 'success') {
-    //                 /* setBookings(prevBookings => 
-    //                     prevBookings.map(b => {
-    //                         if (b.bookingDate === booking.bookingDate) {
-    //                             return {
-    //                                 ...b,
-    //                                 isWinner: b.bookingId === booking.bookingId 
-    //                             };
-    //                         }
-    //                         return b; 
-    //                     })
-    //                 ); */
-    //                  fetchData(); 
-    //             } else {
-    //                 //setError("Could not mark winner. Please try again.");
-    //                 throw new Error(response.data.message || 'Failed to set winner.');
-    //             }
-    //         })
-    //         .catch(err => {
-    //             console.error('Error setting winner:', err);
-    //             //setError("An error occurred while setting the winner.");
-    //         })
-    //         .finally(() => {
-    //             setLoadingWinner(null);
-    //         });
-    //     }
-    // };
 
     const handleSetWinner = async (bookingId, bookingDate) => {
         setLoadingWinner(true);
@@ -483,7 +433,7 @@ function AdminDashboardScreen() {
         return (
             <Card className="kpi-card mb-4 shadow-sm">
                 <Card.Header as="h5" className="d-flex justify-content-between align-items-center">
-                    At-a-Glance
+                    At-a-Glance: Next Quiz
                     <Badge bg="primary">{formatDate(nextEventDate)}</Badge>
                 </Card.Header>
                 <Card.Body>
@@ -673,13 +623,14 @@ function AdminDashboardScreen() {
         <>
             <style>{customCss}</style>
             <div className="container-fluid">
-                <div className="row">
+                
                     {selectedDateData ? (
-                        <DateDetailScreen
-                            date={selectedDate}
-                            //data={selectedDateData}
-                            data={groupedBookings.find(([d]) => d === selectedDate)?.[1] || { bookings: [] }}
-                            onBack={() => setSelectedDate(null)}
+                        <div className="row">
+                            <DateDetailScreen
+                                date={selectedDate}
+                                //data={selectedDateData}
+                                data={groupedBookings.find(([d]) => d === selectedDate)?.[1] || { bookings: [] }}
+                                onBack={() => setSelectedDate(null)}
 
                             tableInfoMap={tableInfoMap}
                             editingRowId={editingRowId}
@@ -693,28 +644,45 @@ function AdminDashboardScreen() {
                             renderTableOptions={renderTableOptions}
                             navigate={navigate}
                         />
+                        </div>
                     ) : (
                         <>
-                            <div className="col-lg-4 mb-4 mb-lg-0">
-                                <h3 className="mb-3">Upcoming Quizzes</h3>
-                                <DashboardSummaryList
-                                    groupedBookings={groupedBookings}
-                                    onDateSelect={setSelectedDate}
-                                />
+                            {/* 1. Top Section: Spotlight (Full Width) */}
+                            {/* This widget has its own header, so no separate h3 is needed. */}
+                            <div className="row">
+                                <div className="col-12 mb-4">
+                                    {renderSpotlightWidget()}
                                 </div>
-                                <div className="col-lg-4 mb-4 mb-lg-0">
-                                <h3 className="mb-3">Next Quiz Overview</h3>
-                                {renderSpotlightWidget()}
-                                {renderTableAvailabilityWidget()}
-                                {renderWaitingListWidget()}
                             </div>
-                            <div className="col-lg-4">
-                                <h3 className="mb-3">All-Time Overview</h3>
-                                {renderAnalyticsWidget()}
+                            {/* 2. Mid Section: Main Content (Lists & Details) */}
+                            <div className="row">
+                                {/* 2a. Mid-Left: Upcoming Quizzes (Navigation) */}
+                                <div className="col-lg-9 col-xl-8 mb-2 mb-lg-0">
+                                    <h3 className="mb-2 h4">Upcoming Quizzes</h3>
+                                    <DashboardSummaryList
+                                        groupedBookings={groupedBookings}
+                                        onDateSelect={setSelectedDate}
+                                        nextEventDate={dashboardStats.nextEventDate}
+                                    />
+                                </div>
+
+                                {/* 2b. Mid-Right: Next Quiz Details (Actionable) */}
+                                <div className="col-lg-3 col-xl-4">
+                                    <h3 className="mb-2 h4">Next Quiz Details</h3>
+                                    {renderTableAvailabilityWidget()}
+                                    {renderWaitingListWidget()}
+                                </div>
+                            </div>
+                            {/* 3. Bottom Section: Historical (Full Width) */}
+                            <div className="row mt-4">
+                                <div className="col-12">
+                                    <h3 className="mb-3 h4">All-Time Overview</h3>
+                                    {renderAnalyticsWidget()}
+                                </div>
                             </div>
                         </>
                     )}
-                </div>
+                
             </div>
         </>
     );

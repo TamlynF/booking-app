@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo } from 'react';
 import axios from 'axios';
 import DatePicker from 'react-datepicker';
 
-//import 'bootstrap/dist/css/bootstrap.min.css';
+import 'bootstrap/dist/css/bootstrap.min.css';
 import 'react-datepicker/dist/react-datepicker.css';
 
 import { Card, ProgressBar, Container, Row, Col, Form, Button } from 'react-bootstrap';
@@ -175,11 +175,11 @@ function QuizBookingScreen() {
                 confirmedGuests += Number(b.groupSize) || 0;
                 confirmedTeams++;
                 if (b.allocTableNo) {
-                    confirmedBookingsList.push({ 
+                    confirmedBookingsList.push({
                         // Use bookingId for a stable key
-                        bookingId: b.bookingId, 
-                        teamName: b.teamName, 
-                        allocTableNo: b.allocTableNo 
+                        bookingId: b.bookingId,
+                        teamName: b.teamName,
+                        allocTableNo: b.allocTableNo
                     });
                 }
             } else if (b.status === 'Pending') {
@@ -228,10 +228,10 @@ function QuizBookingScreen() {
         // Check for duplicates (Confirmed or Pending) on the same date
         const isDuplicate = bookings.some(b => {
             let sheetDateStr = b.bookingDate.includes('T') ? new Date(b.bookingDate).toLocaleDateString() : b.bookingDate;
-            
-            return sheetDateStr === queryDate && 
-                   b.teamName.toLowerCase().trim() === lowerCaseTeamName &&
-                   (b.status === 'Confirmed' || b.status === 'Pending');
+
+            return sheetDateStr === queryDate &&
+                b.teamName.toLowerCase().trim() === lowerCaseTeamName &&
+                (b.status === 'Confirmed' || b.status === 'Pending');
         });
 
         if (isDuplicate) {
@@ -271,7 +271,7 @@ function QuizBookingScreen() {
 
         if (!formData.teamName || !formData.contactName || !formData.contactEmail || !formData.groupSize || teamNameError) {
             if (teamNameError) {
-                 setSubmissionStatus({ loading: false, error: "Please fix the errors in the form.", success: false });
+                setSubmissionStatus({ loading: false, error: "Please fix the errors in the form.", success: false });
             } else {
                 setSubmissionStatus({ loading: false, error: "Please fill in all required fields.", success: false });
             }
@@ -285,10 +285,8 @@ function QuizBookingScreen() {
         let dataToSend;
 
         if (isTableAvailable) {
-            // Table should be available, so we find the best fit one to assign
             const requestedGroupSize = parseInt(formData.groupSize, 10);
-            
-            // Re-run the logic to find the *specific* table
+
             const bookedTableNumbers = new Set(
                 bookings
                     .filter(b => {
@@ -304,7 +302,6 @@ function QuizBookingScreen() {
                 .sort((a, b) => a.maxGroupSize - b.maxGroupSize)[0];
 
             if (suitableTable) {
-                // Found a table, book it
                 dataToSend = {
                     ...formData,
                     bookingId: newBookingId,
@@ -315,7 +312,6 @@ function QuizBookingScreen() {
                     isWinner: 'false'
                 };
             } else {
-                // This is a safety check in case state was stale
                 console.warn("Could not find suitable table even though isTableAvailable was true. Submitting to waiting list.");
                 dataToSend = {
                     ...formData,
@@ -328,8 +324,6 @@ function QuizBookingScreen() {
                 };
             }
         } else {
-            // No table available, submit directly to waiting list
-            // We removed the window.confirm logic
             dataToSend = {
                 ...formData,
                 bookingId: newBookingId,
@@ -341,7 +335,6 @@ function QuizBookingScreen() {
             };
         }
 
-        // Post the data (either 'Confirmed' or 'Pending')
         postBooking(dataToSend);
     };
 
@@ -366,7 +359,7 @@ function QuizBookingScreen() {
     return (
         <div className="quiz-page-container">
             <style>{customCss}</style>
-            
+
             {/* Use Bootstrap's Container to manage the layout */}
             <Container>
                 <Row className="justify-content-center">
@@ -377,14 +370,14 @@ function QuizBookingScreen() {
                             <Card.Body className="p-4 p-md-5">
                                 <h2 className="card-title text-center mb-4">Quiz Night Booking</h2>
                                 <Form noValidate onSubmit={handleSubmit}>
-{/* <h4 className="mb-3 mt-4">Quiz Details</h4> */}
+                                    {/*  <h4 className="mb-3 mt-4">Quiz Details</h4> */}
                                     <Form.Group className="mb-3" controlId="bookingDate">
                                         <Form.Label>Date</Form.Label>
                                         <DatePicker
                                             selected={bookingDate}
                                             onChange={(date) => {
                                                 setBookingDate(date);
-                                                setTeamNameError(null); // Clear error on date change
+                                                setTeamNameError(null);
                                             }}
                                             className="form-control"
                                             dateFormat="dd MMMM yyyy"
@@ -392,8 +385,8 @@ function QuizBookingScreen() {
                                             minDate={new Date()}
                                         />
                                     </Form.Group>
-                                    
-                                    
+
+
                                     <Form.Group className="mb-3" controlId="teamName">
                                         <Form.Label>Team Name</Form.Label>
                                         <Form.Control
@@ -424,7 +417,7 @@ function QuizBookingScreen() {
                                         </Form.Select>
                                     </Form.Group>
 
-                                    
+
                                     <h4 className="mb-3 mt-4">Contact Details</h4>
 
                                     <Form.Group className="mb-3" controlId="contactName">
@@ -472,17 +465,17 @@ function QuizBookingScreen() {
                                                 placeholder="e.g. 7123456789"
                                             />
                                         </Form.Group>
-                                    </Row>                     
+                                    </Row>
 
                                     <div className="d-grid mt-3">
                                         <Button
                                             type="submit"
                                             className={`btn-quiz-theme btn-lg ${!isTableAvailable ? 'btn-warning' : ''}`}
                                             disabled={
-                                                submissionStatus.loading || 
-                                                !formData.contactName || 
-                                                !formData.contactEmail || 
-                                                !formData.groupSize || 
+                                                submissionStatus.loading ||
+                                                !formData.contactName ||
+                                                !formData.contactEmail ||
+                                                !formData.groupSize ||
                                                 !formData.teamName ||
                                                 !!teamNameError // --- Disable submit if error exists ---
                                             }
@@ -509,92 +502,6 @@ function QuizBookingScreen() {
                 </Row>
             </Container>
         </div>
-
-        // <div className="quiz-page-container">
-        //     <style>{customCss}</style>
-        //     <div className="quiz-form-card">
-        //         <div className="card-body p-4 p-md-5">
-        //             <h2 className="card-title text-center mb-4">Quiz Night Booking</h2>
-        //             <form onSubmit={handleSubmit}>
-
-        //                 <div className="mb-3">
-        //                     <label htmlFor="bookingDate" className="form-label">Date </label>
-        //                     <DatePicker
-        //                         selected={bookingDate}
-        //                         onChange={(date) => setBookingDate(date)}
-        //                         className="form-control"
-        //                         dateFormat="MMMM d, yyyy"
-        //                         id="bookingDate"
-        //                         filterDate={isThursday}
-        //                         minDate={new Date()}
-        //                     />
-        //                 </div>
-                        
-        //                 <h4 className="mb-3 mt-4">Team Details</h4>
-        //                 <div className="mb-3">
-        //                     <label htmlFor="teamName" className="form-label">Team Name</label>
-        //                     <input type="text" className="form-control" id="teamName" name="teamName" value={formData.teamName} onChange={handleChange} required />
-        //                 </div>
-        //                 <div className="mb-3">
-        //                     <label htmlFor="groupSize" className="form-label">Group Size</label>
-        //                     <select className="form-select" id="groupSize" name="groupSize" value={formData.groupSize} onChange={handleChange} required>
-        //                         <option value="" disabled>Select...</option>
-        //                         {[...Array(6)].map((_, i) => <option key={i + 1} value={i + 1}>{i + 1}</option>)}
-        //                     </select>
-        //                 </div>
-        //                 <BookingSummary summary={dateSummary} />
-        //                 <h4 className="mb-3 mt-4">Contact Details</h4>
-        //                 <div className="mb-3">
-        //                     <label htmlFor="contactName" className="form-label">Your Name</label>
-        //                     <input type="text" className="form-control" id="contactName" name="contactName" value={formData.contactName} onChange={handleChange} required />
-        //                 </div>
-        //                 <div className="mb-3">
-        //                     <label htmlFor="contactEmail" className="form-label">Email Address</label>
-        //                     <input type="email" className="form-control" id="contactEmail" name="contactEmail" value={formData.contactEmail} onChange={handleChange} required />
-        //                 </div>
-        //                 <div className="row">
-        //                     <div className="col-md-4 mb-3">
-        //                         <label htmlFor="contactCountryCode" className="form-label">Country Code</label>
-        //                         <select
-        //                             className="form-select"
-        //                             id="contactCountryCode"
-        //                             name="contactCountryCode"
-        //                             value={formData.contactCountryCode}
-        //                             onChange={handleChange}
-        //                         >
-        //                             {COUNTRY_CODES.map(c => (
-        //                                 <option key={c.code} value={c.code}>{c.name}</option>
-        //                             ))}
-        //                         </select>
-        //                     </div>
-        //                     <div className="col-md-8 mb-3">
-        //                         <label htmlFor="contactPhoneNo" className="form-label">Phone Number</label>
-        //                         <input
-        //                             type="tel"
-        //                             className="form-control"
-        //                             id="contactPhoneNo"
-        //                             name="contactPhoneNo"
-        //                             value={formData.contactPhoneNo}
-        //                             onChange={handleChange}
-        //                             placeholder="e.g. 7123456789"
-        //                         />
-        //                     </div>
-        //                 </div>                      
-
-        //                 <div className="d-grid mt-3">
-        //                     <button
-        //                         type="submit"
-        //                         className={`btn btn-quiz-theme btn-lg ${!isTableAvailable ? 'btn-warning' : ''}`} // Optional: make button yellow
-        //                         disabled={submissionStatus.loading || !formData.contactName || !formData.contactEmail || !formData.groupSize || !formData.teamName}
-        //                     >
-        //                         {submitButtonText}
-        //                     </button>
-        //                 </div>
-        //                 {submissionStatus.error && <div className="alert alert-danger mt-3">{submissionStatus.error}</div>}
-        //             </form>
-        //         </div>
-        //     </div>
-        // </div>
     );
 }
 

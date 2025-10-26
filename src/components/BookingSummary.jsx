@@ -20,9 +20,10 @@ function BookingSummary({ summary }) {
     return (
         <div className="booking-summary-widget">
             <ProgressBar 
-                variant={occupancy > 80 ? 'danger' : occupancy > 60 ? 'warning' : 'success'}
+                striped 
+                variant={occupancy > 99 ? 'danger' : occupancy > 80 ? 'warning' : occupancy > 35 ? 'success' : 'info'}
                 now={occupancy}
-                label={`${Math.round(occupancy)}% Booked`}
+                //label={`${Math.round(occupancy)}% Booked`}
             />
             <p className="summary-text mb-2">
                 <strong>{confirmedTeams} / {totalTables}</strong> Tables Booked

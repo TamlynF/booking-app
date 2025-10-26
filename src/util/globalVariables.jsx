@@ -1,1 +1,2 @@
-export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwrmnV1-TkeOfm7fdgmAj9whojJpR_UjmndeaRn_R2yw-Lf71D-h43aZfuzRLKSLAz0OA/exec";
+export const GOOGLE_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwfSX3Tk9N0HnnGfvMOpVUlCRLFjHavM74yZs0Wd4NyCBCWGGI5Erz8p189GjL-3IrgKg/exec";
+export const SPOTIFY_ACCESS_TOKEN = "BQCFAJvLsWpjBJuDnVdYCWPWmG_93tA80xgY24C8J4ByWxeCllPiTS_KhueUQXdTicYl3V6YarG-_qPTNK4H8aF7ZHZmACN4enOLiw0xPqzf8snMv1kB67WFfo-MAY55QxZsk92oiwoh6xNZKSKjgmvfCp9z9A7p8dzbIgeoFavXHNl3kskfAoxYqNopacAPJ13u4u56mgM1CR_V_a0ZkxfMfre0ylrPBNJ93cZAojvSyaDWqzQEzPN8ITattfTv1LVSAdYI6XyHE-ELPfD6ZCUhWFwNVLS2xls41jPe_jdhWKnDzhk";
