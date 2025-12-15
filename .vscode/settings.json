@@ -1,0 +1,13 @@
+{
+     "css.lint.unknownAtRules": "ignore",
+  "workbench.colorTheme": "Pitch Black",
+    "files.associations": {
+        "*.css": "tailwindcss"
+    },
+    "material-icon-theme.files.associations": {
+
+    },
+    "editor.quickSuggestions": {
+        "strings": "on"
+    }
+}
